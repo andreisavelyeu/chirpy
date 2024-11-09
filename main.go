@@ -20,6 +20,7 @@ func main() {
 	godotenv.Load()
 	dbURL := os.Getenv("DB_URL")
 	platform := os.Getenv("PLATFORM")
+	jwtSecret := os.Getenv("TOKEN_SECRET")
 	db, err := sql.Open("postgres", dbURL)
 
 	if err != nil {
@@ -30,8 +31,9 @@ func main() {
 	dbQueries := database.New(db)
 
 	config := &config.ApiConfig{
-		Db:       dbQueries,
-		Platform: platform,
+		Db:        dbQueries,
+		Platform:  platform,
+		JwtSecret: jwtSecret,
 	}
 
 	mux := http.NewServeMux()
@@ -46,10 +48,13 @@ func main() {
 	mux.HandleFunc("GET /api/healthz", handlers.HealthzHandler)
 	mux.HandleFunc("GET /admin/metrics", config.GetMetricsHandler)
 	mux.HandleFunc("POST /admin/reset", config.ResetHandler)
-	mux.HandleFunc("POST /api/chirps", handlers.CreateChirpHandler(config))
+	mux.HandleFunc("POST /api/chirps", config.AuthorizationMiddleware(handlers.CreateChirpHandler(config)))
 	mux.HandleFunc("POST /api/users", handlers.CreateUserHandler(config))
 	mux.HandleFunc("GET /api/chirps", handlers.GetChirps(config))
 	mux.HandleFunc("GET /api/chirps/{id}", handlers.GetChirp(config))
+	mux.HandleFunc("POST /api/login", handlers.Login(config))
+	mux.HandleFunc("POST /api/refresh", handlers.Refresh(config))
+	mux.HandleFunc("POST /api/revoke", handlers.Revoke(config))
 
 	fmt.Printf("Listening on port %s\n", port)
 	log.Fatal(server.ListenAndServe())

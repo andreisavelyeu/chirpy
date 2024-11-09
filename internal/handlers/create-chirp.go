@@ -16,8 +16,7 @@ func CreateChirpHandler(cfg *config.ApiConfig) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		type params struct {
-			Body   string `json:"body"`
-			UserId string `json:"user_id"`
+			Body string `json:"body"`
 		}
 
 		data := params{}
@@ -28,19 +27,19 @@ func CreateChirpHandler(cfg *config.ApiConfig) http.HandlerFunc {
 			return
 		}
 
+		userId, ok := utils.GetUserIDFromContext(r)
+
+		if !ok {
+			utils.RespondWithError(w, http.StatusUnauthorized, "Your are not authorized to see this page", nil)
+			return
+		}
+
 		if len(data.Body) > 140 {
 			utils.RespondWithError(w, http.StatusBadRequest, "Chirp is too long", nil)
 			return
 		}
 
 		cleanedMessage := utils.ReplaceBadWords(data.Body, []string{"kerfuffle", "sharbert", "fornax"})
-
-		userId, err := uuid.Parse(data.UserId)
-
-		if err != nil {
-			utils.RespondWithError(w, http.StatusInternalServerError, "Couldn't parse userId: %s", err)
-			return
-		}
 
 		newChirp := database.CreateChirpParams{
 			ID:        uuid.New(),

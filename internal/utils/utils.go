@@ -1,10 +1,13 @@
 package utils
 
 import (
+	"chirpy/internal/types"
 	"encoding/json"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 func RespondWithError(w http.ResponseWriter, code int, msg string, err error) {
@@ -50,4 +53,9 @@ func ReplaceBadWords(word string, badWords []string) string {
 		}
 	}
 	return strings.Join(splittedWord, " ")
+}
+
+func GetUserIDFromContext(r *http.Request) (uuid.UUID, bool) {
+	userID, ok := r.Context().Value(types.UserIDKey).(uuid.UUID)
+	return userID, ok
 }
