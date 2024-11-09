@@ -12,8 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func CreateChirpHandler(cfg *config.ApiConfig) http.HandlerFunc {
-
+func CreateChirp(cfg *config.ApiConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		type params struct {
 			Body string `json:"body"`

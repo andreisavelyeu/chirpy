@@ -74,6 +74,7 @@ func Login(cfg *config.ApiConfig) http.HandlerFunc {
 			Email:        dbUser.Email,
 			Token:        tokenString,
 			RefreshToken: dbRefreshToken.Token,
+			IsChirpyRed:  dbUser.IsChirpyRed,
 		}
 
 		utils.RespondWithJSON(w, http.StatusOK, user)

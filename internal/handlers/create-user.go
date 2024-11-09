@@ -19,7 +19,7 @@ type params struct {
 	Password string `json:"password"`
 }
 
-func CreateUserHandler(cfg *config.ApiConfig) http.HandlerFunc {
+func CreateUser(cfg *config.ApiConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := params{}
 
@@ -51,10 +51,11 @@ func CreateUserHandler(cfg *config.ApiConfig) http.HandlerFunc {
 		}
 
 		user := types.User{
-			ID:        dbUser.ID,
-			CreatedAt: dbUser.CreatedAt,
-			UpdatedAt: dbUser.UpdatedAt,
-			Email:     dbUser.Email,
+			ID:          dbUser.ID,
+			CreatedAt:   dbUser.CreatedAt,
+			UpdatedAt:   dbUser.UpdatedAt,
+			Email:       dbUser.Email,
+			IsChirpyRed: dbUser.IsChirpyRed,
 		}
 
 		utils.RespondWithJSON(w, http.StatusCreated, user)

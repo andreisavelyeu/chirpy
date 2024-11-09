@@ -5,11 +5,17 @@ import (
 	"chirpy/internal/types"
 	"chirpy/internal/utils"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 func GetChirps(cfg *config.ApiConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		dbChirps, err := cfg.Db.GetChirps(r.Context())
+		s := r.URL.Query().Get("author_id")
+
+		userId, _ := uuid.Parse(s)
+
+		dbChirps, err := cfg.Db.GetChirps(r.Context(), userId)
 
 		if err != nil {
 			utils.RespondWithError(w, http.StatusInternalServerError, "Couldn't get from db: %s", err)

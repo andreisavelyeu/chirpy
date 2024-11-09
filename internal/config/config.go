@@ -28,7 +28,7 @@ func (cfg *ApiConfig) MiddlewareMetricsInc(next http.Handler) http.Handler {
 	})
 }
 
-func (cfg *ApiConfig) GetMetricsHandler(w http.ResponseWriter, r *http.Request) {
+func (cfg *ApiConfig) GetMetrics(w http.ResponseWriter, r *http.Request) {
 	hits := cfg.FileserverHits.Load()
 	responseText := fmt.Sprintf(`
 		<html>
@@ -43,7 +43,7 @@ func (cfg *ApiConfig) GetMetricsHandler(w http.ResponseWriter, r *http.Request) 
 	w.Write([]byte(responseText))
 }
 
-func (cfg *ApiConfig) ResetHandler(w http.ResponseWriter, r *http.Request) {
+func (cfg *ApiConfig) Reset(w http.ResponseWriter, r *http.Request) {
 	if cfg.Platform != "dev" {
 		utils.RespondWithError(w, http.StatusForbidden, "Forbidden", nil)
 		return
